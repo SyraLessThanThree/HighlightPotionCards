@@ -34,6 +34,10 @@ public static class PotionDescPatch {
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.QUEST","[green]{0}[/green]");
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.SKILL","[green]{0}[/green]");
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.STATUS","[gray]{0}[/gray]");
+            
+            toHighlight.AddHighlightCustom("free","eng");
+            toHighlight.AddHighlightCustom("discard","eng");
+            //toHighlight.AddHighlightCustom(TryGetLocString("gameplay_ui", "POTION_POPUP.discard"),"eng");
 
             //TODO: i cant find the "colorless" or "cards" word to get "colorless" from "POOL_COLORLESS_TIP
             
@@ -56,7 +60,9 @@ public static class PotionDescPatch {
             foreach (var element in toHighlight) {
                 string regex = string.Format(unformattedRegex, element.Key);
                 var highlights = element.Value;
-                string newStr = string.Format(highlights,element.Key);
+                var match = Regex.Match(__result, regex, RegexOptions.IgnoreCase);
+                if(!match.Success) continue;
+                string newStr = string.Format(highlights,match.Value);
                 __result = Regex.Replace(__result, regex, newStr, RegexOptions.IgnoreCase);
             }
         }
@@ -72,6 +78,25 @@ public static class PotionDescPatch {
             toHighlight.Remove(entry);
             toHighlight.Add(entry, highlightFormat);
         }
+    }
+
+    static void AddHighlightCustom(this Dictionary<string, string> toHighlight, string? entry, List<string> languagesSupported,
+        string? highlightFormat = null, bool forceInsert = false) {
+        if(entry == null) return;
+        if(!languagesSupported.Any((l)=>LocManager.Instance.Language.Equals(l)))
+            return;
+        highlightFormat ??= "[gold]{0}[/gold]";
+        if(!toHighlight.TryAdd(entry, highlightFormat) && forceInsert) {
+            toHighlight.Remove(entry);
+            toHighlight.Add(entry, highlightFormat);
+        }
+    }
+
+    static void AddHighlightCustom(this Dictionary<string, string> toHighlight, string? entry,
+        string language,
+        string? highlightFormat = null, bool forceInsert = false) {
+        AddHighlightCustom(toHighlight, entry, [language], highlightFormat, forceInsert);
+        return;
     }
 
     static string? TryGetLocString(string table, string key) {
