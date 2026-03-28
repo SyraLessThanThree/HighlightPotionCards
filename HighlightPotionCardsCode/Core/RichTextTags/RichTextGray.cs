@@ -4,6 +4,7 @@ using HarmonyLib;
 using HighlightPotionCards.HighlightPotionCards;
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.RichTextTags;
 
@@ -35,6 +36,20 @@ public static class GrayEffectPatch1 {
 public static class GrayEffectPatch2 {
     static void Postfix() {
         return;
+        MainFile.Logger.Info($"NMainMenu._Ready Postfix");
+        var engTables = Traverse.Create(LocManager.Instance).Field<Dictionary<string, LocTable>>("_tables").Value;
+        MainFile.Logger.Info($"NMainMenu._Ready Postfix3");
+        var strToCheck = "colorless";
+        MainFile.Logger.Info($"Showing Eng LocStrings with \"{strToCheck}\"");
+        foreach (var tablePair in engTables) {
+            var table = tablePair.Value;
+            foreach (var key in table.Keys) {
+                var value = table.GetLocString(key);
+                if (value.GetRawText().Contains(strToCheck, StringComparison.InvariantCultureIgnoreCase)) {
+                    MainFile.Logger.Info($"{key}:{value.GetRawText()}");
+                }
+            }
+        }
         MainFile.Logger.Info("Adding RichTexGray");
         var texteffectsArrField =
             Traverse.Create<MegaRichTextLabel>().Field<AbstractMegaRichTextEffect[]>("_textEffects");

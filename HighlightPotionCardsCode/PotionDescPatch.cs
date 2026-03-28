@@ -40,9 +40,16 @@ public static class PotionDescPatch {
             string? colorless = TryGetLocString("card_library", "POOL_COLORLESS_TIP");
             if (colorless != null) {
                 colorless = Regex.Replace(colorless, "\\.$", "");
-                List<string> format1SupportedLangs = ["eng"];
+                toHighlight.TryAdd(colorless,"[gray]{0}[/gray]");
+                
+                List<string> format1SupportedLangs = ["eng","deu"];
                 if(format1SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
                     colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
+                
+                List<string> format2SupportedLangs = ["fra","ita","ptb","spa"];
+                if(format2SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
+                    colorless = Regex.Replace(colorless, "^[A-Za-z0-9]* ", "");
+                
                 toHighlight.TryAdd(colorless,"[gray]{0}[/gray]");
             }
             
