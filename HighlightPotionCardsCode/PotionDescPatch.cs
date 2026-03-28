@@ -25,24 +25,23 @@ public static class PotionDescPatch {
             toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.power").GetFormattedText(),"[blue]{0}[/blue]");
             toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.quest").GetFormattedText(),"[green]{0}[/green]");
             toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.skill").GetFormattedText(),"[green]{0}[/green]");
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.status").GetFormattedText(),"[gray]{0}[/gray]");
+            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.status").GetFormattedText(),"[black]{0}[/black]");
             
             toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.ATTACK").GetFormattedText(),"[red]{0}[/red]");
             toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.CURSE").GetFormattedText(),"[purple]{0}[/purple]");
             toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.POWER").GetFormattedText(),"[blue]{0}[/blue]");
             toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.QUEST").GetFormattedText(),"[green]{0}[/green]");
             toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.SKILL").GetFormattedText(),"[green]{0}[/green]");
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.STATUS").GetFormattedText(),"[gray]{0}[/gray]");
+            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.STATUS").GetFormattedText(),"[black]{0}[/black]");
 
             /* TODO: i cant find the "colorless" or "cards" word to get "colorless" from "POOL_COLORLESS_TIP
-            */
              
             string colorless = new LocString("card_library", "POOL_COLORLESS_TIP").GetFormattedText();
             colorless = Regex.Replace(colorless, "\\.$", "");
             //colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
             toHighlight.AddHighlight(colorless,"[gray]{0}[/gray]");
+            */
             
-            return;
             foreach (var element in toHighlight) {
                 string regex = string.Format(unformattedRegex, element.Key);
                 var highlights = element.Value;
