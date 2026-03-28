@@ -16,27 +16,27 @@ public static class PotionDescPatch {
             Dictionary<string,string> toHighlight = [];
             string unformattedRegex = "(?<!\\]){0}(?!\\[)";
             
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "DISCARD_PILE").GetFormattedText());
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "DRAW_PILE").GetFormattedText());
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "EXHAUST_PILE").GetFormattedText(),"[purple]{0}[/purple]");
+            toHighlight.AddHighlight("gameplay_ui", "DISCARD_PILE");
+            toHighlight.AddHighlight("gameplay_ui", "DRAW_PILE");
+            toHighlight.AddHighlight("gameplay_ui", "EXHAUST_PILE","[purple]{0}[/purple]");
             
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.attack").GetFormattedText(),"[red]{0}[/red]");
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.curse").GetFormattedText(),"[purple]{0}[/purple]");
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.power").GetFormattedText(),"[blue]{0}[/blue]");
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.quest").GetFormattedText(),"[green]{0}[/green]");
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.skill").GetFormattedText(),"[green]{0}[/green]");
-            toHighlight.AddHighlight(new LocString("extensions", "EXTENSION.card.humanizedCardTypes.status").GetFormattedText(),"[black]{0}[/black]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.attack","[red]{0}[/red]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.curse","[purple]{0}[/purple]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.power","[blue]{0}[/blue]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.quest","[green]{0}[/green]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.skill","[green]{0}[/green]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.status","[black]{0}[/black]");
             
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.ATTACK").GetFormattedText(),"[red]{0}[/red]");
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.CURSE").GetFormattedText(),"[purple]{0}[/purple]");
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.POWER").GetFormattedText(),"[blue]{0}[/blue]");
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.QUEST").GetFormattedText(),"[green]{0}[/green]");
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.SKILL").GetFormattedText(),"[green]{0}[/green]");
-            toHighlight.AddHighlight(new LocString("gameplay_ui", "CARD_TYPE.STATUS").GetFormattedText(),"[black]{0}[/black]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.ATTACK","[red]{0}[/red]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.CURSE","[purple]{0}[/purple]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.POWER","[blue]{0}[/blue]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.QUEST","[green]{0}[/green]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.SKILL","[green]{0}[/green]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.STATUS","[black]{0}[/black]");
 
             /* TODO: i cant find the "colorless" or "cards" word to get "colorless" from "POOL_COLORLESS_TIP
              
-            string colorless = new LocString("card_library", "POOL_COLORLESS_TIP").GetFormattedText();
+            string colorless = "card_library", "POOL_COLORLESS_TIP";
             colorless = Regex.Replace(colorless, "\\.$", "");
             //colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
             toHighlight.AddHighlight(colorless,"[gray]{0}[/gray]");
@@ -51,7 +51,17 @@ public static class PotionDescPatch {
         }
     }
 
-    static void AddHighlight(this Dictionary<string,string> toHighlight, string entry, string? highlightFormat = null,bool forceInsert = false) {
+    static void AddHighlight(this Dictionary<string,string> toHighlight, string table, string key, string? highlightFormat = null,bool forceInsert = false) {
+
+        string? entry = null;
+        try {
+            entry = new LocString(table, key).GetFormattedText();
+        }
+        catch (LocException e) {
+            MainFile.Logger.Warn(e.Message);
+            return;
+        }
+        
         highlightFormat ??= "[gold]{0}[/gold]";
         if(!toHighlight.TryAdd(entry, highlightFormat) && forceInsert) {
             toHighlight.Remove(entry);
