@@ -1,8 +1,9 @@
+using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 
-namespace HighlightPotionCards;
+namespace HighlightPotionCards.HighlightPotionCards;
 
 [ModInitializer(nameof(Initialize))]
 public partial class MainFile : Node {
@@ -16,5 +17,6 @@ public partial class MainFile : Node {
         Harmony harmony = new(ModId);
 
         harmony.PatchAll();
+        Godot.Bridge.ScriptManagerBridge.LookupScriptsInAssembly(Assembly.GetExecutingAssembly());
     }
 }

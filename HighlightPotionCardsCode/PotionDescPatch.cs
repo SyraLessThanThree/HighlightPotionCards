@@ -4,6 +4,7 @@ using HarmonyLib;
 using HighlightPotionCards;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MainFile = HighlightPotionCards.HighlightPotionCards.MainFile;
 
 namespace HighlightPotionHands.HighlightPotionHandsCode;
 
@@ -14,7 +15,7 @@ public static class PotionDescPatch {
         if (__instance.LocTable.Equals("potions") && __instance.LocEntryKey.EndsWith(".description")) {
             MainFile.Logger.Info("Starting Potion Highlighting");
             Dictionary<string,string> toHighlight = [];
-            string unformattedRegex = "(?<!\\]){0}(?!\\[)";
+            string unformattedRegex = "(?<![\\]_]){0}(?![\\[_])";
             
             toHighlight.AddHighlight("gameplay_ui", "DISCARD_PILE");
             toHighlight.AddHighlight("gameplay_ui", "DRAW_PILE");
@@ -25,22 +26,25 @@ public static class PotionDescPatch {
             toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.power","[blue]{0}[/blue]");
             toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.quest","[green]{0}[/green]");
             toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.skill","[green]{0}[/green]");
-            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.status","[black]{0}[/black]");
+            toHighlight.AddHighlight("extensions", "EXTENSION.card.humanizedCardTypes.status","[gray]{0}[/gray]");
             
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.ATTACK","[red]{0}[/red]");
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.CURSE","[purple]{0}[/purple]");
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.POWER","[blue]{0}[/blue]");
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.QUEST","[green]{0}[/green]");
             toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.SKILL","[green]{0}[/green]");
-            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.STATUS","[black]{0}[/black]");
+            toHighlight.AddHighlight("gameplay_ui", "CARD_TYPE.STATUS","[gray]{0}[/gray]");
 
-            /* TODO: i cant find the "colorless" or "cards" word to get "colorless" from "POOL_COLORLESS_TIP
-             
-            string colorless = "card_library", "POOL_COLORLESS_TIP";
-            colorless = Regex.Replace(colorless, "\\.$", "");
-            //colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
-            toHighlight.AddHighlight(colorless,"[gray]{0}[/gray]");
-            */
+            //TODO: i cant find the "colorless" or "cards" word to get "colorless" from "POOL_COLORLESS_TIP
+            
+            string? colorless = TryGetLocString("card_library", "POOL_COLORLESS_TIP");
+            if (colorless != null) {
+                colorless = Regex.Replace(colorless, "\\.$", "");
+                List<string> format1SupportedLangs = ["eng"];
+                if(format1SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
+                    colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
+                toHighlight.TryAdd(colorless,"[gray]{0}[/gray]");
+            }
             
             foreach (var element in toHighlight) {
                 string regex = string.Format(unformattedRegex, element.Key);
@@ -53,19 +57,24 @@ public static class PotionDescPatch {
 
     static void AddHighlight(this Dictionary<string,string> toHighlight, string table, string key, string? highlightFormat = null,bool forceInsert = false) {
 
-        string? entry = null;
-        try {
-            entry = new LocString(table, key).GetFormattedText();
-        }
-        catch (LocException e) {
-            MainFile.Logger.Warn(e.Message);
-            return;
-        }
+        string? entry = TryGetLocString(table, key);
+        if(entry == null) return;
         
         highlightFormat ??= "[gold]{0}[/gold]";
         if(!toHighlight.TryAdd(entry, highlightFormat) && forceInsert) {
             toHighlight.Remove(entry);
             toHighlight.Add(entry, highlightFormat);
         }
+    }
+
+    static string? TryGetLocString(string table, string key) {
+        string? entry = null;
+        try {
+            entry = new LocString(table, key).GetFormattedText();
+        }
+        catch (LocException e) {
+            MainFile.Logger.Warn(e.Message);
+        }
+        return entry;
     }
 }
