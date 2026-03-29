@@ -54,16 +54,18 @@ public static class PotionDescPatch {
                 
                 colorless = Regex.Replace(colorless, "\\.$", "");
                 toHighlight.TryAdd(colorless,("[gray]{0}[/gray]",settings));
+
+                if (MainFile.Experimental) {
+                    List<string> format1SupportedLangs = ["eng","deu"];
+                    if(format1SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
+                        colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
                 
-                List<string> format1SupportedLangs = ["eng","deu"];
-                if(format1SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
-                    colorless = Regex.Replace(colorless, " [A-Za-z0-9]*$", "");
+                    List<string> format2SupportedLangs = ["fra","ita","ptb","spa"];
+                    if(format2SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
+                        colorless = Regex.Replace(colorless, "^[A-Za-z0-9]* ", "");
                 
-                List<string> format2SupportedLangs = ["fra","ita","ptb","spa"];
-                if(format2SupportedLangs.Any((l)=>LocManager.Instance.Language.Equals(l)))
-                    colorless = Regex.Replace(colorless, "^[A-Za-z0-9]* ", "");
-                
-                toHighlight.TryAdd(colorless,("[gray]{0}[/gray]",settings));
+                    toHighlight.TryAdd(colorless,("[gray]{0}[/gray]",settings));
+                }
             }
             
             foreach (var element in toHighlight) {
