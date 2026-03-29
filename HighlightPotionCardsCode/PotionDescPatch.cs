@@ -76,10 +76,6 @@ public static class PotionDescPatch {
                 } else {
                     regex = string.Format(unformattedRegex, Regex.Escape(element.Key));
                 }
-
-                if (regex.Contains("HP", StringComparison.CurrentCulture)) {
-                    MainFile.Logger.Info($"HP Regex\"{regex}\"");
-                }
                 
                 var highlights = element.Value.Item1;
                 RegexOptions regexOptions = 0 | (forceCase ? 0 : RegexOptions.IgnoreCase);
