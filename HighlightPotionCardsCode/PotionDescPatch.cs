@@ -18,6 +18,7 @@ public static class PotionDescPatch {
             string unformattedRegex = "(?<![\\]_]){0}(?![\\[_])";
             
             toHighlight.AddHighlightCustom("free","eng");
+            toHighlight.AddHighlightCustom("discarded","eng");
             toHighlight.AddHighlightCustom("discard","eng");
             toHighlight.AddHighlightCustom("attacks","eng","[red]{0}[/red]");
             toHighlight.AddHighlightCustom("damage","eng","[red]{0}[/red]");
